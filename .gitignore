@@ -1,5 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+images/
+tests/
 *.py[cod]
 *$py.class
 
@@ -33,6 +35,11 @@ wheels/
 
 # Installer logs
 pip-log.txt
+ok
+*.scm
+.directory
+.ok*
+*.ok
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
