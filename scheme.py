@@ -32,11 +32,10 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         return SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 5
-        "*** REPLACE THIS LINE ***"
-        # END PROBLEM 5
         proc = scheme_eval(first, env)
         check_procedure(proc)
         return proc.eval_call(rest, env)
+        # END PROBLEM 5
 
 
 def self_evaluating(expr):
@@ -55,7 +54,13 @@ def eval_all(expressions, env):
     """Evaluate each expression im the Scheme list EXPRESSIONS in
     environment ENV and return the value of the last."""
     # BEGIN PROBLEM 8
-    "*** REPLACE THIS LINE ***"
+    if expressions is nil:
+        return
+    while expressions is not nil and isinstance(expressions.second, Pair):
+        expr = expressions
+        expressions = expressions.first
+        scheme_eval(expressions, env)
+        expressions = expr.second
     return scheme_eval(expressions.first, env)
     # END PROBLEM 8
 
