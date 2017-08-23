@@ -86,9 +86,8 @@ class Frame:
     def define(self, symbol, value):
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 3
-        "*** REPLACE THIS LINE ***"
-        # END PROBLEM 3
         self.bindings[symbol] = value
+        # END PROBLEM 3
 
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
@@ -98,8 +97,6 @@ class Frame:
         tmp = self
         if symbol in self.bindings:
             return self.bindings[symbol]
-        # elif self.parent is not None and symbol in self.parent.bindings:
-        #     return self.parent.bindings[symbol]
         else:
             while tmp.parent is not None:
                 tmp = tmp.parent
@@ -120,7 +117,11 @@ class Frame:
         """
         child = Frame(self)  # Create a new child with self as the parent
         # BEGIN PROBLEM 11
-        "*** REPLACE THIS LINE ***"
+        if len(formals) != len(vals):
+            raise SchemeError('too many vals are given: {0}'.format(vals))
+        while formals is not nil:
+            child.define(formals.first, vals.first)
+            formals, vals = formals.second, vals.second
         # END PROBLEM 11
         return child
 
