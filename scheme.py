@@ -92,8 +92,6 @@ class Frame:
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
         # BEGIN PROBLEM 3
-        "*** REPLACE THIS LINE ***"
-        # END PROBLEM 3
         tmp = self
         if symbol in self.bindings:
             return self.bindings[symbol]
@@ -102,6 +100,7 @@ class Frame:
                 tmp = tmp.parent
                 if symbol in tmp.bindings:
                     return tmp.bindings[symbol]
+        # END PROBLEM 3
         raise SchemeError('unknown identifier: {0}'.format(symbol))
 
     def make_child_frame(self, formals, vals):
@@ -212,7 +211,8 @@ class LambdaProcedure(UserDefinedProcedure):
         """Make a frame that binds my formal parameters to ARGS, a Scheme list
         of values, for a lexically-scoped call evaluated in environment ENV."""
         # BEGIN PROBLEM 12
-        "*** REPLACE THIS LINE ***"
+        frame = self.env.make_child_frame(self.formals, args)
+        return frame
         # END PROBLEM 12
 
     def __str__(self):
