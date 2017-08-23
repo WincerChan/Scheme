@@ -294,7 +294,7 @@ def do_lambda_form(expressions, env):
     formals = expressions.first
     check_formals(formals)
     # BEGIN PROBLEM 9
-    "*** REPLACE THIS LINE ***"
+    return LambdaProcedure(formals, expressions.second, env)
     # END PROBLEM 9
 
 
