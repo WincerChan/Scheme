@@ -54,14 +54,21 @@ def eval_all(expressions, env):
     """Evaluate each expression im the Scheme list EXPRESSIONS in
     environment ENV and return the value of the last."""
     # BEGIN PROBLEM 8
-    if expressions is nil:
-        return
-    while expressions is not nil and isinstance(expressions.second, Pair):
-        expr = expressions
-        expressions = expressions.first
-        scheme_eval(expressions, env)
-        expressions = expr.second
-    return scheme_eval(expressions.first, env)
+    # if expressions is nil:
+    #     return
+    # while expressions is not nil and isinstance(expressions.second, Pair):
+    #     expr = expressions
+    #     expressions = expressions.first
+    #     scheme_eval(expressions, env)
+    #     expressions = expr.second
+    # return scheme_eval(expressions.first, env)
+    while expressions is not nil:
+        if expressions.second is nil:
+            return scheme_eval(expressions.first, env, True)
+        else:
+            scheme_eval(expressions.first, env)
+        expressions = expressions.second
+    return None
     # END PROBLEM 8
 
 ################
@@ -92,14 +99,10 @@ class Frame:
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
         # BEGIN PROBLEM 3
-        tmp = self
         if symbol in self.bindings:
             return self.bindings[symbol]
-        else:
-            while tmp.parent is not None:
-                tmp = tmp.parent
-                if symbol in tmp.bindings:
-                    return tmp.bindings[symbol]
+        elif self.parent:
+            return self.parent.lookup(symbol)
         # END PROBLEM 3
         raise SchemeError('unknown identifier: {0}'.format(symbol))
 
@@ -120,7 +123,8 @@ class Frame:
             raise SchemeError('too many vals are given: {0}'.format(vals))
         while formals is not nil:
             child.define(formals.first, vals.first)
-            formals, vals = formals.second, vals.second
+            formals = formals.second
+            vals = vals.second
         # END PROBLEM 11
         return child
 
@@ -140,7 +144,7 @@ class Procedure:
         # BEGIN PROBLEM 5
         "*** REPLACE THIS LINE ***"
         args = operands.map(lambda operand: scheme_eval(operand, env))
-        return scheme_apply(self, args, env)
+        return self.apply(args, env)
         # END PROBLEM 5
 
 
@@ -176,14 +180,13 @@ class PrimitiveProcedure(Procedure):
             python_args.append(args.first)
             args = args.second
         # BEGIN PROBLEM 4
-        "*** REPLACE THIS LINE ***"
-        # END PROBLEM 4
         if self.use_env:
             python_args.append(env)
         try:
             return self.fn(*python_args)
         except:
             raise SchemeError
+        # END PROBLEM 4
 
 
 class UserDefinedProcedure(Procedure):
@@ -280,7 +283,6 @@ def do_quote_form(expressions, env):
     """Evaluate a quote form."""
     check_form(expressions, 1, 1)
     # BEGIN PROBLEM 7
-    # Dont't eval this expressions
     return expressions.first
     # END PROBLEM 7
 
@@ -307,36 +309,41 @@ def do_if_form(expressions, env):
     if scheme_truep(scheme_eval(expressions.first, env)):
         return scheme_eval(expressions.second.first, env)
     elif len(expressions) == 3:
-        return scheme_eval(expressions.second.second.first, env)
+        return scheme_eval(expressions.second.second.first, env, True)
 
 
 def do_and_form(expressions, env):
     """Evaluate a (short-circuited) and form."""
     # BEGIN PROBLEM 13
-    if expressions is nil:
-        return True
-    boool = scheme_eval(expressions.first, env)
-    while scheme_truep(boool):
+    while expressions is not nil:
         if expressions.second is nil:
-            return boool
+            # Return the last sub-expression
+            return scheme_eval(expressions.first, env, True)
+        else:
+            # Evaluate each sub-expression
+            result = scheme_eval(expressions.first, env)
+        # If the evaluation hits the false value, return it
+        if scheme_falsep(result):
+            return result
+        #  Go to the next expression
         expressions = expressions.second
-        boool = scheme_eval(expressions.first, env)
-    return boool
+    # If the expression is nil at first, return True directly
+    return True
     # END PROBLEM 13
 
 
 def do_or_form(expressions, env):
     """Evaluate a (short-circuited) or form."""
     # BEGIN PROBLEM 13
-    if expressions is nil:
-        return False
-    boool = scheme_eval(expressions.first, env)
-    while not scheme_truep(boool):
+    while expressions is not nil:
         if expressions.second is nil:
-            return boool
+            return scheme_eval(expressions.first, env, True)
+        else:
+            result = scheme_eval(expressions.first, env)
+        if scheme_truep(result):
+            return result
         expressions = expressions.second
-        boool = scheme_eval(expressions.first, env)
-    return boool
+    return False
     # END PROBLEM 13
 
 
@@ -376,9 +383,9 @@ def make_let_frame(bindings, env):
     if not scheme_listp(bindings):
         raise SchemeError('bad bindings list in let form')
     # BEGIN PROBLEM 15
-    bindings.map(lambda exp: check_form(exp, 2, 2))
-    formals = bindings.map(lambda exp: exp.first)
-    vals = bindings.map(lambda exp: eval_all(exp.second, env))
+    bindings.map(lambda expr: check_form(expr, 2, 2))
+    formals = bindings.map(lambda expr: expr.first)
+    vals = bindings.map(lambda expr: scheme_eval(expr.second.first, env))
     check_formals(formals)
     return env.make_child_frame(formals, vals)
     # END PROBLEM 15
@@ -631,7 +638,7 @@ def scheme_optimized_eval(expr, env, tail=False):
 ################################################################
 # Uncomment the following line to apply tail call optimization #
 ################################################################
-# scheme_eval = scheme_optimized_eval
+scheme_eval = scheme_optimized_eval
 
 ################
 # Input/Output #
