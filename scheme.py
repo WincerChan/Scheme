@@ -615,7 +615,7 @@ def scheme_optimized_eval(expr, env, tail=False):
 
     if tail:
         # BEGIN PROBLEM 20
-        "*** REPLACE THIS LINE ***"
+        return Thunk(expr, env)
         # END PROBLEM 20
     else:
         result = Thunk(expr, env)
@@ -630,7 +630,9 @@ def scheme_optimized_eval(expr, env, tail=False):
             result = SPECIAL_FORMS[first](rest, env)
         else:
             # BEGIN PROBLEM 20
-            "*** REPLACE THIS LINE ***"
+            proc = scheme_eval(first, env)
+            check_procedure(proc)
+            result = proc.eval_call(rest, env)
             # END PROBLEM 20
     return result
 
