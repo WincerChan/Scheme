@@ -313,14 +313,30 @@ def do_if_form(expressions, env):
 def do_and_form(expressions, env):
     """Evaluate a (short-circuited) and form."""
     # BEGIN PROBLEM 13
-    "*** REPLACE THIS LINE ***"
+    if expressions is nil:
+        return True
+    boool = scheme_eval(expressions.first, env)
+    while scheme_truep(boool):
+        if expressions.second is nil:
+            return boool
+        expressions = expressions.second
+        boool = scheme_eval(expressions.first, env)
+    return boool
     # END PROBLEM 13
 
 
 def do_or_form(expressions, env):
     """Evaluate a (short-circuited) or form."""
     # BEGIN PROBLEM 13
-    "*** REPLACE THIS LINE ***"
+    if expressions is nil:
+        return False
+    boool = scheme_eval(expressions.first, env)
+    while not scheme_truep(boool):
+        if expressions.second is nil:
+            return boool
+        expressions = expressions.second
+        boool = scheme_eval(expressions.first, env)
+    return boool
     # END PROBLEM 13
 
 
