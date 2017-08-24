@@ -376,7 +376,11 @@ def make_let_frame(bindings, env):
     if not scheme_listp(bindings):
         raise SchemeError('bad bindings list in let form')
     # BEGIN PROBLEM 15
-    "*** REPLACE THIS LINE ***"
+    bindings.map(lambda exp: check_form(exp, 2, 2))
+    formals = bindings.map(lambda exp: exp.first)
+    vals = bindings.map(lambda exp: eval_all(exp.second, env))
+    check_formals(formals)
+    return env.make_child_frame(formals, vals)
     # END PROBLEM 15
 
 
