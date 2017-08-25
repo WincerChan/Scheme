@@ -176,7 +176,7 @@ class PrimitiveProcedure(Procedure):
             python_args.append(env)
         try:
             return self.fn(*python_args)
-        except:
+        except TypeError:
             raise SchemeError
         # END PROBLEM 4
 
@@ -309,12 +309,9 @@ def do_and_form(expressions, env):
     # BEGIN PROBLEM 13
     while expressions is not nil:
         if expressions.second is nil:
-            # Return the last sub-expression
             return scheme_eval(expressions.first, env, True)
         else:
-            # Evaluate each sub-expression
             result = scheme_eval(expressions.first, env)
-        # If the evaluation hits the false value, return it
         if scheme_falsep(result):
             return result
         #  Go to the next expression
