@@ -400,7 +400,13 @@ def scheme_call_cc(function, env):
             self.value = value
 
     # BEGIN PROBLEM 21
-    "*** REPLACE THIS LINE ***"
+    try:
+        complete_eval(
+            scheme_apply(function,
+                         Pair(ContinuationProcedure(ContinuationError), nil),
+                         env))
+    except ContinuationError as ce:
+        return ce.value
     # END PROBLEM 21
 
 
@@ -417,7 +423,7 @@ class ContinuationProcedure(Procedure):
         if args.second is not nil:
             raise SchemeError('a continuation takes only one argument')
         # BEGIN PROBLEM 21
-        "*** REPLACE THIS LINE ***"
+        raise self.error_class(args.first)
         # END PROBLEM 21
 
 
